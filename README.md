@@ -10,7 +10,7 @@ A short clip of the trained model autonomously driving the Lake track in the Uda
 
 https://github.com/IamTemmy/pilotnet-reproduction/raw/main/results/demo.mp4
 
-The model drove successfully for roughly 30 seconds before getting stuck on an unusually-textured bridge section — a failure mode I'll discuss in the Observations section below.
+The model drove successfully for roughly 20 seconds before getting stuck on an unusually-textured bridge section — a failure mode I'll discuss in the Observations section below.
 
 ## Results at a glance
 
