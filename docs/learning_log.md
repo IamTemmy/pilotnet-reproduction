@@ -76,3 +76,30 @@ Data augmentation that triples the dataset by using all three cameras (with adju
 
 ### What surprised me
 That a fully working training script is only ~120 lines of code. I expected ML training to be much more complex underneath. Most of it is just bookkeeping — loop over data, run the model, save checkpoints, track losses. The "intelligence" lives almost entirely in the model file and the loss function. The trainer itself is plumbing.
+
+---
+
+## Phase 4: Evaluation, deployment, and observations
+
+### What I built
+Three closing pieces: the inference server (`drive.py`) that connects the trained model to the live Udacity simulator over WebSockets; the quantitative evaluation script (`evaluate.py`) that computes aggregate metrics, a sample predictions grid, and an error histogram across all held-out validation data; and the final repo polish — a polished README, a demo video, and the supporting artifacts.
+
+### What I actually learned
+
+**Loading a saved model is a two-step process.** A `.pth` file contains only the weights, not the architecture. You build the same model class first, then call `load_state_dict` to pour the weights in. Always call `.eval()` after loading for inference — some layer types behave differently during training vs inference, and even though PilotNet doesn't use those layers, it's the right habit. Loading would silently break if I changed the model architecture without keeping old checkpoints aligned.
+
+**Real-time inference uses WebSockets.** The simulator is a separate program that talks to my Python script over a WebSocket connection on port 4567. For every camera frame the simulator sends, my code preprocesses the image, runs the model, and sends back a steering command. The "the model owns its input contract" principle from earlier paid off here — `preprocess()` does the exact same crop/resize/RGB/transpose pipeline regardless of whether the image came from disk (training) or from the simulator (inference). One place to change preprocessing, one source of truth.
+
+**The driving wasn't smooth.** My trained model drove the track but with constant micro-corrections. This is called *steering jitter* and it happens because PilotNet predicts each frame independently with no memory. Modern AV systems fix this with temporal smoothing or recurrent networks.
+
+**The car eventually got stuck on the bridge.** A cobblestone bridge with a texture different from the regular road caused the model to drift slightly. Once drifted, the model was in a state it hadn't seen well during training, made worse predictions, and the failure compounded until the car beached itself on the curb. This is the textbook *distributional shift* / *covariate shift* failure mode of behavioral cloning. DAgger and similar methods exist specifically to address this. Knowing the name of the failure mode is half the battle in interviews.
+
+**The MSE from evaluation matched the val loss from training exactly.** Both were 0.01093. That's not luck — it's a consistency check confirming that the evaluation script is computing the same loss over the same validation set with the same weights. Subtle, but a real sanity check that I'd recommend doing on any project where evaluation is implemented separately from training.
+
+**Real-world toolchain friction.** The Udacity simulator is an unsigned 2017 Unity build. On modern macOS Apple Silicon, getting it to launch required stripping the quarantine attribute, ensuring the binary was executable, and pinning specific old versions of `python-socketio` and `python-engineio` so the protocol matched. Not unusual for production ML — older deployed artifacts often need specific library versions to stay alive.
+
+### What surprised me
+How quickly the model converged on the basic task. After just 2 epochs of training, validation loss was already at 0.018 — well within the "good" range. Most of the remaining training was diminishing-returns refinement. This shaped my view of training schedules: the first few epochs do the heavy lifting; long training runs are about squeezing the last few percent.
+
+### What I'd do differently next time
+Record significantly more training data, especially on the bridge sections and sharp curves where the model fails. The fix for distributional shift starts with making the training distribution wider — augmentation can only stretch existing data so far. Beyond that, swapping the per-frame regression for a recurrent model (LSTM or Transformer head over a temporal window) would likely eliminate the jitter and handle the bridge transitions more gracefully.
