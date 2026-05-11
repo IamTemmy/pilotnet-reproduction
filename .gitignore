@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data — too big for git, instructions in data/README.md
+data/
+!data/README.md
+
+# Model checkpoints — too big
+*.pth
+*.pt
+*.h5
+checkpoints/
+
+# Results that we DO want tracked: keep curves and demo
+# (results/ folder itself is tracked)
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
