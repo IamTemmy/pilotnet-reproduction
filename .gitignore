@@ -17,11 +17,10 @@ env/
 data/
 !data/README.md
 
-# Model checkpoints — too big
+# Model weights are too big for git, but track everything else in checkpoints/
 *.pth
 *.pt
 *.h5
-checkpoints/
 
 # Results that we DO want tracked: keep curves and demo
 # (results/ folder itself is tracked)
