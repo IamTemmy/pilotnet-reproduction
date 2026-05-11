@@ -48,3 +48,31 @@ A PyTorch `Dataset` class that reads the Udacity simulator's `driving_log.csv` a
 
 ### What surprised me
 The header detection logic for the CSV. The Udacity sample data has a header row but data I record myself in the simulator won't. The code auto-detects which case it's dealing with by trying to parse the first row as a number. Small piece of robustness that I wouldn't have thought of, but it'll matter when I record my own driving data later.
+
+
+---
+
+## Phase 3: Augmentation and training setup (`augment.py` + `train.py`)
+
+### What I built
+Data augmentation that triples the dataset by using all three cameras (with adjusted steering labels for the side cameras) and doubles it again with horizontal flips — going from ~8,000 raw rows to ~48,000 training samples. Then a full training script that splits the data carefully, runs the model through many epochs, and saves checkpoints.
+
+### What I actually learned
+
+**Augmentation is "free" training data through clever interpretation.** The 8,000 raw rows of the CSV already had three image paths each (left, center, right cameras mounted on the same virtual car). By treating the side cameras as "what the road looks like if the car had drifted slightly off-center" and adjusting the steering label by ±0.20 to represent the recovery needed, we get three times the training examples with no new data collection. Adding mirrored versions doubles it again. The network ends up learning recovery behavior too — what to do when the car has drifted.
+
+**Data leakage in train/validation splits.** If we naively split the 48,000 augmented samples randomly, the same driving moment could appear in both sets (e.g., the center camera in training and the flipped left camera in validation). The validation loss would be artificially low because the model has technically seen that moment during training. The fix: split on the raw 8,000 rows first, then expose all 6 augmented variants only within each split. This is the kind of subtle mistake that breaks ML projects silently and is a common interview question.
+
+**The four moving parts of any training loop:** a model that predicts, a loss function that measures wrongness, an optimizer that adjusts weights based on that wrongness, and an outer loop that iterates over the data. Every PyTorch training script has these four parts. The "PyTorch trinity" inside each step: `optimizer.zero_grad()` → `loss.backward()` → `optimizer.step()`, in that order.
+
+**Why we evaluate on a held-out validation set.** Training loss going down just means the network is fitting the training data — it could just be memorizing. Validation loss going down means it's actually learning the task in a way that generalizes. If training loss keeps falling but validation loss starts rising, the network is memorizing and we need to stop.
+
+**Hyperparameters as command-line flags.** Batch size, learning rate, number of epochs — all configurable from the command line via `argparse`. Means we can experiment by typing `python -m src.train --lr 1e-3 --epochs 50` instead of editing code each time.
+
+### Questions I asked that mattered
+"Are we splitting each image into three parts?" No — each driving moment already had three separate complete images (one from each camera). The CSV has three image paths per row. We weren't splitting anything; we were using more of what was already there.
+
+"What's the random seed for?" Reproducibility. Random shuffles in code aren't truly random — they come from a formula seeded with a starting number. Set the seed, get the same shuffle every time. Means experiments can be re-run identically, which matters for fair comparison.
+
+### What surprised me
+That a fully working training script is only ~120 lines of code. I expected ML training to be much more complex underneath. Most of it is just bookkeeping — loop over data, run the model, save checkpoints, track losses. The "intelligence" lives almost entirely in the model file and the loss function. The trainer itself is plumbing.
