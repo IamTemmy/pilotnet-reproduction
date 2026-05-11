@@ -1,0 +1,22 @@
+PilotNet — Evaluation on Held-Out Validation Set
+==================================================
+Validation samples evaluated: 9,642
+
+Aggregate error metrics (steering range is [-1, 1]):
+  Mean Absolute Error (MAE):       0.07688
+  Mean Squared Error (MSE):        0.01093
+  Root Mean Squared Error (RMSE):  0.10452
+  Median Absolute Error:           0.05912
+  90th percentile absolute error:  0.16310
+  99th percentile absolute error:  0.33562
+  Max absolute error:              0.60564
+
+Accuracy buckets:
+  Predictions within 0.05 of true steering:   4,244 / 9,642  (44.0%)
+  Predictions within 0.10 of true steering:   6,974 / 9,642  (72.3%)
+  Predictions within 0.20 of true steering:   9,087 / 9,642  (94.2%)
+
+Interpretation:
+  The steering signal ranges from -1 (full left) to +1 (full right). An MAE of
+  0.077 means the typical prediction is off by roughly 7.7% of the
+  full steering range -- generally suitable for closed-loop driving on this track.
