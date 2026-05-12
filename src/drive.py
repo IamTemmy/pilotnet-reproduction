@@ -9,8 +9,6 @@ and a throttle target.
 Usage:
     python -m src.drive --model checkpoints/best.pth
 
-Then in a separate window: open the simulator, select a track,
-and click "Autonomous Mode".
 """
 
 import argparse

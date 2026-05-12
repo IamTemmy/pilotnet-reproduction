@@ -8,9 +8,6 @@ Two augmentations, both from the original paper:
    Pair them with an adjusted steering label that would correct that drift.
    This triples the effective dataset size.
 
-2. Horizontal flip: a mirrored road scene with mirrored steering is still a
-   valid training example. This doubles whatever we have.
-
 Combined, ~8,000 raw frames become ~48,000 effective training examples.
 """
 
