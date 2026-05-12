@@ -103,3 +103,26 @@ How quickly the model converged on the basic task. After just 2 epochs of traini
 
 ### What I'd do differently next time
 Record significantly more training data, especially on the bridge sections and sharp curves where the model fails. The fix for distributional shift starts with making the training distribution wider — augmentation can only stretch existing data so far. Beyond that, swapping the per-frame regression for a recurrent model (LSTM or Transformer head over a temporal window) would likely eliminate the jitter and handle the bridge transitions more gracefully.
+
+---
+
+## Phase 5: Closed-loop observations across multiple runs
+
+### What happened
+Ran the simulator again to show the demo to someone else. Surprisingly, the model produced a meaningfully different result from the original run — the car still jittered aggressively at the cobblestone bridge, but this time it survived the bridge and kept driving for over a minute. In the original run captured in the demo video, the same model on the same weights had failed at the same bridge after ~30 seconds.
+
+### What I actually learned
+
+**The system is non-deterministic across runs even though the model is fixed.** Two runs with the exact same trained weights produced visibly different trajectories. This was initially confusing — how can a deterministic neural network produce different outputs? The answer is that the network itself is (mostly) deterministic, but the *system* it operates in isn't. Several things vary subtly between runs:
+- Frame timing from the simulator depends on what else the OS is doing
+- Floating-point math on the MPS GPU backend has tiny non-determinism
+- The simulator's physics engine has small numerical variation
+
+Individually, these are negligible. But the system is a closed feedback loop: model output → car position → next image → next model output → next car position. Each tiny variation gets amplified through the loop, especially near decision boundaries where the model's prediction was already uncertain.
+
+**The bridge is a decision boundary, which is why jitter intensified there.** On the regular road the model is confident, so frame-to-frame predictions stay similar. On the cobblestone bridge — visually unlike anything in the training distribution — the model's confidence drops, predictions become noisier, and the noise gets amplified by the closed-loop physics. Sometimes the noise lands in a recoverable state, sometimes not. The non-determinism IS the jitter, observed at the system level.
+
+**An AV system is more than its model.** Knowing what the architecture predicts isn't enough; you also have to reason about how those predictions interact with physics, timing, and the world in real time. Production AV teams spend enormous effort on closed-loop testing for exactly this reason.
+
+### What surprised me
+That I could *observe* the difference between an open-loop and closed-loop system directly, on my own laptop, by just running the same simulator twice. In the training data world (open loop), the model produces a single prediction per image and that's the end of the story. In the simulator world (closed loop), the model and the physics and the timing all interact, and the same model can produce different journeys. Realizing this changed how I think about deploying ML systems generally — the model's accuracy on a static test set isn't a complete picture of how it'll behave in a live system.
