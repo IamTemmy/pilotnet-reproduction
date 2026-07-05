@@ -10,7 +10,6 @@ A short clip of the trained model autonomously driving the Lake track in the Uda
 
 https://github.com/user-attachments/assets/97ae7eff-c28f-479d-95da-19cf522c1227
 
-*(If the video doesn't play inline on your browser, [click here to view directly](results/demo.mp4).)*
 
 Across runs, the model has shown variability at the cobblestone bridge section — sometimes recovering and continuing to drive for over a minute, sometimes failing there after ~30 seconds. That variability is itself a signal worth discussing (see the Observations section below).
 
