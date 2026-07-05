@@ -8,7 +8,7 @@ The model takes a single forward-facing camera frame and predicts the steering a
 
 A short clip of the trained model autonomously driving the Lake track in the Udacity simulator:
 
-<video src="https://github.com/IamTemmy/pilotnet-reproduction/raw/main/results/demo.mp4" controls width="720"></video>
+https://github.com/user-attachments/assets/97ae7eff-c28f-479d-95da-19cf522c1227
 
 *(If the video doesn't play inline on your browser, [click here to view directly](results/demo.mp4).)*
 
