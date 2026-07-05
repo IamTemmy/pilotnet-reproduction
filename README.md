@@ -8,9 +8,11 @@ The model takes a single forward-facing camera frame and predicts the steering a
 
 A short clip of the trained model autonomously driving the Lake track in the Udacity simulator:
 
-https://github.com/IamTemmy/pilotnet-reproduction/raw/main/results/demo.mp4
+<video src="https://github.com/IamTemmy/pilotnet-reproduction/raw/main/results/demo.mp4" controls width="720"></video>
 
-The model drove successfully for roughly 20 seconds before getting stuck on an unusually-textured bridge section — a failure mode I'll discuss in the Observations section below.
+*(If the video doesn't play inline on your browser, [click here to view directly](results/demo.mp4).)*
+
+Across runs, the model has shown variability at the cobblestone bridge section — sometimes recovering and continuing to drive for over a minute, sometimes failing there after ~30 seconds. That variability is itself a signal worth discussing (see the Observations section below).
 
 ## Results at a glance
 
