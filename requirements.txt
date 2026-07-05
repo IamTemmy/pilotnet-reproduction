@@ -6,6 +6,13 @@ matplotlib>=3.7.0
 opencv-python>=4.8.0
 pillow>=10.0.0
 tqdm>=4.65.0
-python-socketio>=5.10.0
+
+# Simulator I/O.
+# The Udacity 2017 build speaks Engine.IO protocol 3, so python-socketio and
+# python-engineio MUST stay on the 4.x / 3.x line. Newer python-socketio (5.x)
+# defaults to a protocol the old simulator cannot handshake — the connection
+# opens and then immediately drops. These pins are load-bearing for drive.py.
+python-socketio==4.6.1
+python-engineio==3.13.2
 eventlet>=0.33.0
 flask>=3.0.0
