@@ -104,7 +104,7 @@ python -m src.drive --model checkpoints/best.pth
 
 ## Observations
 
-Three things I noticed during real-time simulator driving that connect to real failure modes discussed in the autonomous-driving literature:
+Four things stood out during this project — the first three from real-time simulator driving, the last from the training curves — that connect to real failure modes discussed in the autonomous-driving literature:
 
 **Steering jitter.** The car drove the track but the steering was not smooth — it constantly micro-corrected left-right-left as it moved. This is a known limitation of single-frame regression models: PilotNet predicts steering from one image with no memory of its previous prediction, so successive frames can produce predictions that flip sign even when the road is roughly straight. Modern autonomous-driving systems address this with temporal smoothing on the output or with recurrent architectures that condition on history.
 

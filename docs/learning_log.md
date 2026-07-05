@@ -7,7 +7,7 @@ This is where I capture what I'm learning as I build this project. It's written 
 ## Phase 1: Project setup and the architecture (`model.py`)
 
 ### What I built
-The PilotNet neural network from the 2016 NVIDIA paper, in PyTorch. About 250,000 parameters across 5 convolutional layers and 4 fully connected layers, with a hardcoded normalization step at the input.
+The PilotNet neural network from the 2016 NVIDIA paper, in PyTorch. About 250,000 parameters across 5 convolutional layers and 4 fully connected layers (three hidden layers of 100, 50, and 10 units, then a 1-unit output), with a hardcoded normalization step at the input.
 
 ### What I actually learned
 
