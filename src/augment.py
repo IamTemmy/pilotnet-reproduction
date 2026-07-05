@@ -1,14 +1,19 @@
 """
 Data augmentation for the Udacity PilotNet pipeline.
 
-Two augmentations, both from the original paper:
+Two augmentations:
 
-1. Multi-camera augmentation: treat the left- and right-camera images as if they
-   were center-camera images taken from a car that had drifted off-center.
-   Pair them with an adjusted steering label that would correct that drift.
-   This triples the effective dataset size.
+1. Multi-camera augmentation (from the original paper): treat the left- and
+   right-camera images as if they were center-camera images taken from a car
+   that had drifted off-center. Pair them with an adjusted steering label that
+   would correct that drift. This triples the effective dataset size.
 
-Combined, ~8,000 raw frames become ~48,000 effective training examples.
+2. Horizontal flip (a common community addition, not in the original paper):
+   mirror each frame left-to-right and negate its steering label. This doubles
+   the dataset again and balances left/right turn representation.
+
+Combined, the two give ~6x expansion: ~8,000 raw rows become ~48,000 augmented
+samples (~38,500 training + ~9,600 validation after the leakage-safe split).
 """
 
 from pathlib import Path

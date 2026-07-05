@@ -9,7 +9,7 @@ Architecture (Figure 4 of the paper):
     -> 5 convolutional layers (3 with 5x5 kernels stride 2, 2 with 3x3 kernels stride 1)
     -> Flatten
     -> 3 fully connected hidden layers (100, 50, 10)
-    -> Output: 1 scalar (steering angle in radians)
+    -> Output: 1 scalar (normalized steering angle in [-1, 1])
     Total parameters: ~250k
 """
 
@@ -56,7 +56,7 @@ class PilotNet(nn.Module):
         Args:
             x: input tensor of shape (batch, 3, 66, 200) with pixel values in [0, 255].
         Returns:
-            tensor of shape (batch, 1) — predicted steering angle in radians.
+            tensor of shape (batch, 1) — predicted steering angle, normalized to [-1, 1].
         """
         # Hardcoded normalization, as specified in the paper.
         # Maps pixel range [0, 255] -> [-1, 1] without learnable parameters.
